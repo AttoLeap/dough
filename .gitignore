@@ -1,0 +1,15 @@
+# ignore all the files
+*
+
+# but not these files
+!*.rs
+
+!/.gitignore
+
+!README.md
+!LICENSE.md
+!Cargo.toml
+!Cargo.lock
+
+# ... not when they are in subdirectories
+!*/
