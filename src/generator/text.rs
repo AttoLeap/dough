@@ -16,14 +16,14 @@ const BUF_SIZE: u16 = 256;
 impl Generator for TextGenerator {
     fn generate(&self, mut out: impl io::Write) {
         let mut length = self.char_count;
-        while length > 0 {
-            let string = if length < (BUF_SIZE as u128) {
-                generate_string(length as u16)
-            } else {
-                length -= BUF_SIZE as u128;
-                generate_string(BUF_SIZE)
-            };
+        while length >= BUF_SIZE as u128 {
+            length -= BUF_SIZE as u128;
+            let string = generate_string(BUF_SIZE);
             out.write(string.as_bytes()).unwrap();
+        }
+        if length > 0 {
+            out.write(generate_string(length as u16).as_bytes())
+                .unwrap();
         }
     }
 }
