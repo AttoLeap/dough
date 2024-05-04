@@ -35,3 +35,19 @@ fn generate_string(length: u16) -> String {
     }
     return string;
 }
+
+#[cfg(test)]
+mod tests {
+    use regex::Regex;
+
+    use super::generate_string;
+
+    #[test]
+    fn test_string_generator() {
+        let length = 999;
+        let result = generate_string(length);
+        let re = Regex::new("[a-zA-Z0-9]").unwrap();
+        assert_eq!(result.len(), length as usize);
+        assert!(re.is_match(&result));
+    }
+}
