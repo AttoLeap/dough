@@ -22,5 +22,7 @@ pub enum GenerateCmd {
         to_stderr: bool,
         #[clap(long, short, default_value_t = 1024)]
         size: u128,
+        #[clap(long, short, default_value_t = 1)]
+        count: u64,
     },
 }

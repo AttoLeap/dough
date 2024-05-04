@@ -17,21 +17,24 @@ fn main() {
                 size,
                 to_stdout,
                 to_stderr,
+                count,
             } => {
                 let text_gen = TextGenerator::new(size);
-                let out: Box<dyn Write> = match (to_stdout, to_stderr) {
-                    (true, false) => Box::new(io::stdout()),
-                    (false, true) => Box::new(io::stderr()),
-                    (false, false) => {
-                        let file = format!("{}/file.txt", path);
-                        Box::new(fs::File::create(file).unwrap())
-                    }
-                    (true, true) => {
-                        eprintln!("Conflicting flags specified");
-                        exit(1);
-                    }
-                };
-                text_gen.generate(out);
+                for i in 1..=count {
+                    let out: Box<dyn Write> = match (to_stdout, to_stderr) {
+                        (true, false) => Box::new(io::stdout()),
+                        (false, true) => Box::new(io::stderr()),
+                        (false, false) => {
+                            let file = format!("{}/file_{}.txt", path, i);
+                            Box::new(fs::File::create(file).unwrap())
+                        }
+                        (true, true) => {
+                            eprintln!("Conflicting flags specified");
+                            exit(1);
+                        }
+                    };
+                    text_gen.generate(out);
+                }
             }
         },
     }
