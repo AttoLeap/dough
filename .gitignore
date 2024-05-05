@@ -11,5 +11,8 @@
 !Cargo.toml
 !Cargo.lock
 
+# give github related files a free pass
+!/.github/**/*
+
 # ... not when they are in subdirectories
 !*/
