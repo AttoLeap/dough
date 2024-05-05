@@ -40,7 +40,9 @@ fn generate_string(length: u16) -> String {
 mod tests {
     use regex::Regex;
 
-    use super::generate_string;
+    use crate::generator::Generator;
+
+    use super::{generate_string, TextGenerator};
 
     #[test]
     fn test_string_generator() {
@@ -49,5 +51,14 @@ mod tests {
         let re = Regex::new("[a-zA-Z0-9]").unwrap();
         assert_eq!(result.len(), length as usize);
         assert!(re.is_match(&result));
+    }
+
+    #[test]
+    fn test_text_generator() {
+        let length = 10033;
+        let text_gen = TextGenerator::new(length);
+        let mut out = Vec::new();
+        text_gen.generate(&mut out);
+        assert_eq!(out.len(), length as usize);
     }
 }
