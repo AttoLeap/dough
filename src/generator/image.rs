@@ -1,14 +1,17 @@
-
-
 use clap::ValueEnum;
-use image::{codecs::{avif::AvifEncoder, bmp::BmpEncoder, jpeg::JpegEncoder, png::PngEncoder, webp::WebPEncoder}, ImageBuffer, ImageEncoder, Rgb};
+use image::{
+    codecs::{
+        avif::AvifEncoder, bmp::BmpEncoder, jpeg::JpegEncoder, png::PngEncoder, webp::WebPEncoder,
+    },
+    ImageBuffer, ImageEncoder, Rgb,
+};
 
 use super::Generator;
 
 pub struct ImageGenerator {
     width: u32,
     height: u32,
-    codec: ImageCodec
+    codec: ImageCodec,
 }
 
 #[derive(Clone, Copy, ValueEnum)]
@@ -17,11 +20,11 @@ pub enum ImageCodec {
     BMP,
     JPEG,
     PNG,
-    WEBP
+    WEBP,
 }
 
 impl ImageCodec {
-    pub fn get_extension(self) -> &'static str{
+    pub fn get_extension(self) -> &'static str {
         match self {
             ImageCodec::AVIF => "avif",
             ImageCodec::BMP => "bmp",
@@ -34,15 +37,22 @@ impl ImageCodec {
 
 impl ImageGenerator {
     pub fn new(width: u32, height: u32, codec: ImageCodec) -> ImageGenerator {
-        return ImageGenerator { width, height, codec };
+        return ImageGenerator {
+            width,
+            height,
+            codec,
+        };
     }
 
     fn generate_image_buffer(&self) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
         let mut buf = image::ImageBuffer::new(self.width, self.height);
+        let r_mul = fastrand::f64();
+        let g_mul = fastrand::f64();
+        let b_mul = fastrand::f64();
         for (x, y, pixel) in buf.enumerate_pixels_mut() {
-            let r = (0.3 * x as f64) as u8;
-            let g = (0.4 * x.abs_diff(y) as f64) as u8;
-            let b = (0.5 * y as f64) as u8;
+            let r = (r_mul * x as f64) as u8;
+            let g = (g_mul * x.abs_diff(y) as f64) as u8;
+            let b = (b_mul * y as f64) as u8;
             *pixel = image::Rgb([r, g, b]);
         }
         buf
@@ -54,20 +64,55 @@ impl Generator for ImageGenerator {
         let buf = self.generate_image_buffer();
         match self.codec {
             ImageCodec::AVIF => {
-                AvifEncoder::new(out).write_image(&buf, self.width, self.height, image::ExtendedColorType::Rgb8).unwrap();
-            },
+                AvifEncoder::new(out)
+                    .write_image(
+                        &buf,
+                        self.width,
+                        self.height,
+                        image::ExtendedColorType::Rgb8,
+                    )
+                    .unwrap();
+            }
             ImageCodec::BMP => {
-                BmpEncoder::new(&mut out).write_image(&buf, self.width, self.height, image::ExtendedColorType::Rgb8).unwrap();
+                BmpEncoder::new(&mut out)
+                    .write_image(
+                        &buf,
+                        self.width,
+                        self.height,
+                        image::ExtendedColorType::Rgb8,
+                    )
+                    .unwrap();
             }
             ImageCodec::JPEG => {
-                JpegEncoder::new(out).write_image(&buf, self.width, self.height, image::ExtendedColorType::Rgb8).unwrap();
-            },
+                JpegEncoder::new(out)
+                    .write_image(
+                        &buf,
+                        self.width,
+                        self.height,
+                        image::ExtendedColorType::Rgb8,
+                    )
+                    .unwrap();
+            }
             ImageCodec::PNG => {
-                PngEncoder::new(out).write_image(&buf, self.width, self.height, image::ExtendedColorType::Rgb8).unwrap();
-            },
+                PngEncoder::new(out)
+                    .write_image(
+                        &buf,
+                        self.width,
+                        self.height,
+                        image::ExtendedColorType::Rgb8,
+                    )
+                    .unwrap();
+            }
             ImageCodec::WEBP => {
-                WebPEncoder::new_lossless(out).write_image(&buf, self.width, self.height, image::ExtendedColorType::Rgb8).unwrap();
-            },
+                WebPEncoder::new_lossless(out)
+                    .write_image(
+                        &buf,
+                        self.width,
+                        self.height,
+                        image::ExtendedColorType::Rgb8,
+                    )
+                    .unwrap();
+            }
         }
     }
 }
