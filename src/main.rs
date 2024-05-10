@@ -3,6 +3,7 @@ use std::process::exit;
 use std::{fs, io};
 
 use clap::Parser;
+use dough::generator::image::ImageGenerator;
 use dough::generator::text::TextGenerator;
 use dough::generator::Generator;
 
@@ -26,6 +27,32 @@ fn main() {
                         (false, true) => Box::new(io::stderr()),
                         (false, false) => {
                             let file = format!("{}/file_{}.txt", path, i);
+                            Box::new(fs::File::create(file).unwrap())
+                        }
+                        (true, true) => {
+                            eprintln!("Conflicting flags specified");
+                            exit(1);
+                        }
+                    };
+                    text_gen.generate(out);
+                }
+            }
+            cli::GenerateCmd::Image {
+                path,
+                to_stdout,
+                to_stderr,
+                width,
+                height,
+                codec,
+                count,
+            } => {
+                let text_gen = ImageGenerator::new(width, height, codec);
+                for i in 1..=count {
+                    let out: Box<dyn Write> = match (to_stdout, to_stderr) {
+                        (true, false) => Box::new(io::stdout()),
+                        (false, true) => Box::new(io::stderr()),
+                        (false, false) => {
+                            let file = format!("{}/file_{}.{}", path, i, codec.get_extension());
                             Box::new(fs::File::create(file).unwrap())
                         }
                         (true, true) => {
