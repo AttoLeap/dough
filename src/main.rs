@@ -43,15 +43,16 @@ fn main() {
                 to_stderr,
                 width,
                 height,
+                codec,
                 count,
             } => {
-                let text_gen = ImageGenerator::new(width, height);
+                let text_gen = ImageGenerator::new(width, height, codec);
                 for i in 1..=count {
                     let out: Box<dyn Write> = match (to_stdout, to_stderr) {
                         (true, false) => Box::new(io::stdout()),
                         (false, true) => Box::new(io::stderr()),
                         (false, false) => {
-                            let file = format!("{}/file_{}.png", path, i);
+                            let file = format!("{}/file_{}.{}", path, i, codec.get_extension());
                             Box::new(fs::File::create(file).unwrap())
                         }
                         (true, true) => {

@@ -1,3 +1,5 @@
+use dough::generator::image::ImageCodec;
+
 #[derive(clap::Parser)]
 #[clap(version, about)]
 pub struct Command {
@@ -36,6 +38,8 @@ pub enum GenerateCmd {
         width: u32,
         #[clap(long, short = 'H', default_value_t = 1024)]
         height: u32,
+        #[clap(long, short = 'C', default_value = "png")]
+        codec: ImageCodec,
         #[clap(long, short, default_value_t = 1)]
         count: u64,
     },
