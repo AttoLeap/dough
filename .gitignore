@@ -16,3 +16,5 @@
 
 # ... not when they are in subdirectories
 !*/
+
+/target
