@@ -13,6 +13,18 @@ mod cli;
 
 fn main() {
     let cmd = cli::Command::parse();
+    match fs::create_dir_all(cmd.path.clone()) {
+        Ok(_) => println!("Created `{}` directory as it didn't exist", cmd.path),
+        Err(err) => match err.kind() {
+            io::ErrorKind::AlreadyExists => {
+                println!("The output directory {} already exists...", cmd.path)
+            }
+            e => {
+                eprintln!("Failed to create output directory: {}", e);
+                exit(1)
+            }
+        },
+    };
     match cmd.subcmd {
         cli::SubCommand::Generate(gen_cmd) => match gen_cmd {
             cli::GenerateCmd::Text { size } => {
