@@ -6,6 +6,7 @@ use clap::Parser;
 use dough::generator::image::ImageGenerator;
 use dough::generator::text::TextGenerator;
 use dough::generator::Generator;
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 mod cli;
 
@@ -14,19 +15,15 @@ fn main() {
     match cmd.subcmd {
         cli::SubCommand::Generate(gen_cmd) => match gen_cmd {
             cli::GenerateCmd::Text {
-                path,
                 size,
-                to_stdout,
-                to_stderr,
-                count,
             } => {
                 let text_gen = TextGenerator::new(size);
-                for i in 1..=count {
-                    let out: Box<dyn Write> = match (to_stdout, to_stderr) {
+                (1..=cmd.count).into_par_iter().map(|i| {
+                    let out: Box<dyn Write> = match (cmd.to_stdout, cmd.to_stderr) {
                         (true, false) => Box::new(io::stdout()),
                         (false, true) => Box::new(io::stderr()),
                         (false, false) => {
-                            let file = format!("{}/file_{}.txt", path, i);
+                            let file = format!("{}/file_{}.txt", cmd.path, i);
                             Box::new(fs::File::create(file).unwrap())
                         }
                         (true, true) => {
@@ -35,33 +32,30 @@ fn main() {
                         }
                     };
                     text_gen.generate(out);
-                }
+                }).collect_vec_list();
             }
             cli::GenerateCmd::Image {
-                path,
-                to_stdout,
-                to_stderr,
                 width,
                 height,
                 codec,
-                count,
             } => {
                 let text_gen = ImageGenerator::new(width, height, codec);
-                for i in 1..=count {
-                    let out: Box<dyn Write> = match (to_stdout, to_stderr) {
-                        (true, false) => Box::new(io::stdout()),
-                        (false, true) => Box::new(io::stderr()),
-                        (false, false) => {
-                            let file = format!("{}/file_{}.{}", path, i, codec.get_extension());
-                            Box::new(fs::File::create(file).unwrap())
-                        }
-                        (true, true) => {
-                            eprintln!("Conflicting flags specified");
-                            exit(1);
-                        }
-                    };
-                    text_gen.generate(out);
-                }
+                (1..=cmd.count).into_par_iter()
+                    .map(|i| {
+                        let out: Box<dyn Write> = match (cmd.to_stdout, cmd.to_stderr) {
+                            (true, false) => Box::new(io::stdout()),
+                            (false, true) => Box::new(io::stderr()),
+                            (false, false) => {
+                                let file = format!("{}/file_{}.{}", cmd.path, i, codec.get_extension());
+                                Box::new(fs::File::create(file).unwrap())
+                            }
+                            (true, true) => {
+                                eprintln!("Conflicting flags specified");
+                                exit(1);
+                            }
+                        };
+                        text_gen.generate(out);
+                    }).collect_vec_list();
             }
         },
     }

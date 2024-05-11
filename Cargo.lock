@@ -304,6 +304,7 @@ dependencies = [
  "clap",
  "fastrand",
  "image",
+ "rayon",
  "regex",
 ]
 
