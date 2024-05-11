@@ -5,13 +5,13 @@ use dough::generator::image::ImageCodec;
 pub struct Command {
     #[command(subcommand)]
     pub subcmd: SubCommand,
-    #[clap(long, short, default_value = ".")]
+    #[clap(long, short, global = true, default_value = ".")]
     pub path: String,
-    #[clap(long, default_value_t = false)]
+    #[clap(long, global = true, default_value_t = false)]
     pub to_stdout: bool,
-    #[clap(long, default_value_t = false)]
+    #[clap(long, global = true, default_value_t = false)]
     pub to_stderr: bool,
-    #[clap(long, short, default_value_t = 1)]
+    #[clap(long, short, global = true, default_value_t = 1)]
     pub count: u64,
 }
 
