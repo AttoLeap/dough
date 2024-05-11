@@ -1,0 +1,12 @@
+# global owner pattern
+* @attoleap/founders
+
+# type based ownership
+.github/ @attoleap/developers
+.git* @attoleap/developers
+*.md @attoleap/developers
+
+src/ @attoleap/architects
+*.rs @attoleap/architects
+Cargo.* @attoleap/architects
+LICENSE.md @attoleap/architects
