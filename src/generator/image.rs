@@ -1,7 +1,7 @@
 use clap::ValueEnum;
 use image::{
     codecs::{
-        avif::AvifEncoder, bmp::BmpEncoder, jpeg::JpegEncoder, png::PngEncoder, webp::WebPEncoder,
+        bmp::BmpEncoder, jpeg::JpegEncoder, png::PngEncoder, webp::WebPEncoder,
     },
     ImageBuffer, ImageEncoder, Rgb,
 };
@@ -16,7 +16,6 @@ pub struct ImageGenerator {
 
 #[derive(Clone, Copy, ValueEnum)]
 pub enum ImageCodec {
-    AVIF,
     BMP,
     JPEG,
     PNG,
@@ -26,7 +25,6 @@ pub enum ImageCodec {
 impl ImageCodec {
     pub fn get_extension(self) -> &'static str {
         match self {
-            ImageCodec::AVIF => "avif",
             ImageCodec::BMP => "bmp",
             ImageCodec::JPEG => "jpeg",
             ImageCodec::PNG => "png",
@@ -63,16 +61,6 @@ impl Generator for ImageGenerator {
     fn generate(&self, mut out: impl std::io::Write) {
         let buf = self.generate_image_buffer();
         match self.codec {
-            ImageCodec::AVIF => {
-                AvifEncoder::new(out)
-                    .write_image(
-                        &buf,
-                        self.width,
-                        self.height,
-                        image::ExtendedColorType::Rgb8,
-                    )
-                    .unwrap();
-            }
             ImageCodec::BMP => {
                 BmpEncoder::new(&mut out)
                     .write_image(
