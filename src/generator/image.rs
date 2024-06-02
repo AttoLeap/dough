@@ -1,8 +1,6 @@
 use clap::ValueEnum;
 use image::{
-    codecs::{
-        bmp::BmpEncoder, jpeg::JpegEncoder, png::PngEncoder, webp::WebPEncoder,
-    },
+    codecs::{bmp::BmpEncoder, jpeg::JpegEncoder, png::PngEncoder, webp::WebPEncoder},
     ImageBuffer, ImageEncoder, Rgb,
 };
 
