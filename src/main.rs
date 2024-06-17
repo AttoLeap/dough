@@ -13,7 +13,7 @@ mod cli;
 
 fn main() {
     let cmd = cli::Command::parse();
-    if (!cmd.to_stdout && !cmd.to_stderr) {
+    if !cmd.to_stdout && !cmd.to_stderr {
         match fs::create_dir_all(cmd.path.clone()) {
             Ok(_) => println!("Created `{}` directory as it didn't exist", cmd.path),
             Err(err) => match err.kind() {
